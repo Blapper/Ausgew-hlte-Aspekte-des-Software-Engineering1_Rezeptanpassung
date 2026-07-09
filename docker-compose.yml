@@ -1,0 +1,27 @@
+services:
+  # https://hub.docker.com/_/mongo/
+  mongo:
+    image: mongo:7.0.34-jammy
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: g3h3im
+      MONGO_INITDB_DATABASE: rezeptanpassung
+    volumes:
+      - mongo-data:/data/db
+    restart: "no" # Nach Neustart Docker-Dämon nicht automatisch starten
+  # Web-UI ( https://hub.docker.com/_/mongo-express )
+  mongo-express:
+    image: mongo-express:1.0.2-20-alpine3.19
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: g3h3im
+      ME_CONFIG_MONGODB_URL: mongodb://root:g3h3im@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    restart: "no"
+
+volumes:
+  mongo-data:
