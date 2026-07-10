@@ -1,4 +1,5 @@
 package assignment.dhbw.olaf.rezeptanpassung.db;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -47,7 +48,7 @@ public class GerichtDocument {
 
     public List<Zutat> getZutatenlisteProPerson() { return zutatenlisteProPerson; }
 
-    public void setZutatenlistePerPerson(List<Zutat> z) { this.zutatenlistePerPerson = z; }
+    public void setZutatenlisteProPerson(List<Zutat> z) { this.zutatenlisteProPerson = z; }
 
      @Override // Ohne diese Funktion wird im Fall einer falschen Notation die Speicheradresse ausgegeben
     public String toString() { return "Gericht \"" + name + "\" (Nr. " + nummer + ")"; } 

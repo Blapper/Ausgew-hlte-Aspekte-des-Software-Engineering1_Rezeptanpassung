@@ -1,4 +1,4 @@
-package assinment.dhbw.olaf.rezeptanpassung;
+package assignment.dhbw.olaf.rezeptanpassung;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

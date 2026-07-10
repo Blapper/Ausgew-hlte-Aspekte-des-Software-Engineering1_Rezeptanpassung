@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Gericht-Details</title></head>
+<body>
+    <h1 th:text="${gericht.name}">Gerichtname</h1>
+
+    <p><a th:href="@{/gerichte}">Zurück zur Gerichte-Liste</a></p>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Nummer</th>
+            <td th:text="${gericht.nummer}">0815</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td th:text="${gericht.name}">Pfannkuchen</td>
+        </tr>
+        <tr>
+            <th>Version</th>
+            <td th:text="${gericht.version}">v1</td>
+        </tr>
+    </table>
+
+    <h2>Zutaten pro Person</h2>
+
+    <p th:if="${#lists.isEmpty(gericht.zutatenlisteProPerson)}">Keine Zutaten hinterlegt.</p>
+
+    <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(gericht.zutatenlisteProPerson)}">
+        <thead>
+            <tr>
+                <th>Zutat</th>
+                <th>Menge</th>
+                <th>Einheit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="zutat : ${gericht.zutatenlisteProPerson}">
+                <td th:text="${zutat.name}">Mehl</td>
+                <td th:text="${zutat.menge}">100</td>
+                <td th:text="${zutat.einheit}">g</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

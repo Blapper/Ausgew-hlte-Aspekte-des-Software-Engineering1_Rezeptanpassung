@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Neues Gericht</title></head>
+<body>
+    <h1>Neues Gericht anlegen</h1>
+
+    <form th:action="@{/gerichte/neu}" method="post">
+        <label>Nummer: <input type="text" name="nummer"></label><br>
+        <label>Name: <input type="text" name="name"></label><br>
+        <label>Version: <input type="text" name="version"></label><br>
+        <button type="submit">Speichern</button>
+    </form>
+</body>
+</html>

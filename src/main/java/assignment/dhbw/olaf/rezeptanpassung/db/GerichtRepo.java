@@ -1,4 +1,5 @@
-package main.java.assignment.dhbw.olaf.rezeptanpassung.db; // ohne Main und Java wurde das Package nicht erkannt
+package assignment.dhbw.olaf.rezeptanpassung.db;
+
 import java.util.List;
 import java.util.Optional;
 

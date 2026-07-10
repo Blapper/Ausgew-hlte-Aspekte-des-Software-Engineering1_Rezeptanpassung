@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Gerichte-Liste</title></head>
+<body>
+    <h1>Alle Gerichte</h1>
+
+    <p><a th:href="@{/gerichte/neu}">Neues Gericht anlegen</a></p>
+
+    <p th:if="${#lists.isEmpty(gerichte)}">Es sind noch keine Gerichte vorhanden.</p>
+
+    <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(gerichte)}">
+        <thead>
+            <tr>
+                <th>Nummer</th>
+                <th>Name</th>
+                <th>Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="gericht : ${gerichte}">
+                <td th:text="${gericht.nummer}">0815</td>
+                <td>
+                    <a th:href="@{/gerichte/{nummer}(nummer=${gericht.nummer})}" th:text="${gericht.name}">Name</a>
+                </td>
+                <td th:text="${gericht.version}">1.0</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
