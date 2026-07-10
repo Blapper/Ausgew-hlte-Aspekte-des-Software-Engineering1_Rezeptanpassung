@@ -1,4 +1,4 @@
-package abgabe.dhbw.olaf.rezeptanpassung.db;
+package assignment.dhbw.olaf.rezeptanpassung.db;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -17,10 +17,7 @@ public class GerichtDocument {
     private String nummer;
     private String name;
     private String version;
-    private String rezept;
     private List<Zutat> zutatenlisteProPerson;
-
-
 
 /** Default-Konstruktor. */
     public GerichtDocument() {}
@@ -29,25 +26,27 @@ public class GerichtDocument {
     /**
      * Konstruktor, für neue Rezepte.
      */
-    public GerichtDocument( String nummer, String name, String version, String rezept, List<Zutat> zutatenlisteProPerson ) {
+    public GerichtDocument( String nummer, String name, String version, List<Zutat> zutatenlisteProPerson ) {
 
         this.nummer                 = nummer;
         this.name                   = name;
         this.version                = version;
-        this.rezept                 = rezept;
         this.zutatenlisteProPerson  = zutatenlisteProPerson;
     }
 
     public ObjectId getId() { return id; }
+
     public String getNummer() { return nummer; }
     public void setNummer(String nummer) { this.nummer = nummer; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public String getVersion() { return version; }
     public void setVersion(String version) { this.version = version; }
-    public String getRezept() { return rezept; }
-    public void setRezept(String rezept) { this.rezept = rezept; }
+
     public List<Zutat> getZutatenlisteProPerson() { return zutatenlisteProPerson; }
+
     public void setZutatenlistePerPerson(List<Zutat> z) { this.zutatenlistePerPerson = z; }
 
      @Override // Ohne diese Funktion wird im Fall einer falschen Notation die Speicheradresse ausgegeben

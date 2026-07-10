@@ -1,4 +1,4 @@
-package abgabe.dhbw.olaf.rezeptanpassung.db;
+package assignment.dhbw.olaf.rezeptanpassung.db;
 
 import java.util.List;
 
