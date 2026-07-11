@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Gerichte-Liste</title></head>
+<head><title>Berichte-Liste</title></head>
 <body>
     <h1>Alle Berichte</h1>
-
-    <p><a th:href="@{/gerichte/neu}">Neuen Bericht anlegen</a></p>
 
     <p th:if="${#lists.isEmpty(berichte)}">Es sind noch keine Berichte vorhanden.</p>
 
     <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(berichte)}">
         <thead>
             <tr>
-                <th>Nummer</th>
-                <th>Name</th>
-                <th>Version</th>
+                <th>Wölflinge / Grundschüler</th>
+                <th>Pfadfinder / 12 bis 16 Jahre</th>
+                <th>Ranger/Rover / älter als 16 </th>
+                <th>Prozentualer Überschuss</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="bericht : ${berichte}">
-                <td th:text="${bericht.nummer}">0815</td>
-                <td>
-                    <a th:href="@{/berichte/{nummer}(nummer=${bericht.nummer})}" th:text="${bericht.name}">Name</a>
-                </td>
-                <td th:text="${bericht.version}">1.0</td>
+                <td th:text="${bericht.getanzahlWoelflinge()}">10</td>
+                <td th:text="${bericht.getanzahlPfadfinder()}">8</td>
+                <td th:text="${bericht.getanzahlRangerRover()}">5</td>
+                <td th:text="${bericht.getprozentualerUeberschuss()}">10.0</td>
             </tr>
         </tbody>
     </table>

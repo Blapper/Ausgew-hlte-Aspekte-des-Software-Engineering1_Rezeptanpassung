@@ -54,7 +54,7 @@ public class Bericht_ThymeleafController {
 
         final List<BerichtDocument> berichte = _berichtRepo.findByGerichtIdOrderByErstelltAmDesc( gerichtId );
 
-        model.addAttribute( "bericht", berichte );
+        model.addAttribute( "berichte", berichte );
 
         return "berichte-liste";
     }
