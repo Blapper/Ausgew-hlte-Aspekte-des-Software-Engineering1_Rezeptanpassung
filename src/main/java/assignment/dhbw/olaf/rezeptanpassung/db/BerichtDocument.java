@@ -12,13 +12,12 @@ public class BerichtDocument {
     @Id
     private ObjectId id;
     private ObjectId gerichtId;
+    private int nummer;
     private int anzahlWoelflinge;
     private int anzahlPfadfinder;
     private int anzahlRangerRover;
     private double prozentualerUeberschuss;
-    private LocalDateTime erstelltAm;
 
-    // Konstruktoren, Getter/Setter, toString -> selbst schreiben
 
     /** Default-Konstruktor. */
     public BerichtDocument() {}
@@ -26,10 +25,11 @@ public class BerichtDocument {
     /**
      * Konstruktor, für neue Rezepte.
      */
-    public BerichtDocument( ObjectId gerichtId, int anzahlWoelflinge, int anzahlPfadfinder, int anzahlRangerRover,
+    public BerichtDocument( ObjectId gerichtId, int nummer, int anzahlWoelflinge, int anzahlPfadfinder, int anzahlRangerRover,
                             double prozentualerUeberschuss){
 
         this.gerichtId                  = gerichtId;
+        this.nummer                     = nummer;
         this.anzahlWoelflinge           = anzahlWoelflinge;
         this.anzahlPfadfinder           = anzahlPfadfinder;
         this.anzahlRangerRover          = anzahlRangerRover;
@@ -38,6 +38,9 @@ public class BerichtDocument {
 
     public ObjectId getId() { return id; }
     public ObjectId getGerichtId() { return gerichtId; }
+
+    public int getNummer() { return nummer; }
+    public void setNummer(int nummer) { this.nummer = nummer; }
 
     public int getanzahlWoelflinge() { return anzahlWoelflinge; }
     public void setanzahlWoelflinge(int anzahlWoelflinge) { this.anzahlWoelflinge = anzahlWoelflinge; }
@@ -54,7 +57,7 @@ public class BerichtDocument {
 
      @Override // Ohne diese Funktion wird im Fall einer falschen Notation die Speicheradresse ausgegeben
     public String toString() {
-    return "Bericht für Gericht " + gerichtId
+    return "Bericht Nr. " + nummer + " für Gericht " + gerichtId
          + " (Woelflinge: " + anzahlWoelflinge
          + ", Pfadfinder: " + anzahlPfadfinder
          + ", RangerRover: " + anzahlRangerRover

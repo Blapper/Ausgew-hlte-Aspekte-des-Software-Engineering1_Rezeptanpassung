@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Bericht anlegen</title>
+</head>
+<body>
+
+    <h1>Neuen Bericht anlegen für <span th:text="${gericht.name}">Gericht</span></h1>
+
+    <form th:action="@{/berichte/neu/{nummer}(nummer=${gericht.nummer})}" method="post">
+        <label>Wölflinge / Grundschüler: <input type="number" name="anzahlWoelflinge" required="required"></label><br>
+        <label>Pfadfinder / 12 bis 16 Jahre: <input type="number" name="anzahlPfadfinder" required="required"></label><br>
+        <label>Ranger/Rover / älter als 16: <input type="number" name="anzahlRangerRover" required="required"></label><br>
+        <label>Prozentualer Überschuss: <input type="number" step="any" name="prozentualerUeberschuss" required="required"></label><br>
+        <button type="submit">Speichern</button>
+    </form>
+
+    <p><a th:href="@{/berichte/{nummer}(nummer=${gericht.nummer})}">Abbrechen</a></p>
+
+</body>
+</html>

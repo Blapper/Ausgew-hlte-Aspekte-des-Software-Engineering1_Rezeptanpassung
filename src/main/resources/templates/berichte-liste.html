@@ -6,9 +6,12 @@
 
     <p th:if="${#lists.isEmpty(berichte)}">Es sind noch keine Berichte vorhanden.</p>
 
+    <p><a th:href="@{/berichte/neu/{nummer}(nummer=${gericht.nummer})}">Neuen Bericht anlegen</a></p>
+
     <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(berichte)}">
         <thead>
             <tr>
+                <th>Nummer</th>
                 <th>Wölflinge / Grundschüler</th>
                 <th>Pfadfinder / 12 bis 16 Jahre</th>
                 <th>Ranger/Rover / älter als 16 </th>
@@ -17,6 +20,7 @@
         </thead>
         <tbody>
             <tr th:each="bericht : ${berichte}">
+                <td th:text="${bericht.getNummer()}">1</td>
                 <td th:text="${bericht.getanzahlWoelflinge()}">10</td>
                 <td th:text="${bericht.getanzahlPfadfinder()}">8</td>
                 <td th:text="${bericht.getanzahlRangerRover()}">5</td>
