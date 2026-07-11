@@ -6,6 +6,8 @@
 
     <p><a th:href="@{/gerichte}">Zurück zur Gerichte-Liste</a></p>
 
+    <p><a th:href="@{/gerichte/{nummer}/loeschen(nummer=${gericht.nummer})}">Gericht löschen</a></p>
+
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
             <th>Nummer</th>

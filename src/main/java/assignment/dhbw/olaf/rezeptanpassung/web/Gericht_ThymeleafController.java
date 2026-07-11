@@ -73,7 +73,7 @@ public class Gericht_ThymeleafController {
     model.addAttribute( "gericht", gericht );
 
     return "gericht-detail";
-}
+    }
 
 
     /**
@@ -107,27 +107,83 @@ public class Gericht_ThymeleafController {
                                     @RequestParam("name") String name,
                                     @RequestParam("version") String version ) {
 
-    final Optional<GerichtDocument> vorhanden = _gerichtRepo.findByNummer( nummer );
+        final Optional<GerichtDocument> vorhanden = _gerichtRepo.findByNummer( nummer );
                                     
 
-    if ( vorhanden.isPresent() ) {
+         if ( vorhanden.isPresent() ) {
 
-        final String meldung = format( "Gericht mit Nummer \"%s\" existiert bereits.", nummer );
+         final String meldung = format( "Gericht mit Nummer \"%s\" existiert bereits.", nummer );
 
-        LOG.warn( meldung );
+         LOG.warn( meldung );
 
-        model.addAttribute( "fehlermeldung", meldung );
-        return "fehler";
+          model.addAttribute( "fehlermeldung", meldung );
+          return "fehler";
+            }
+
+        final GerichtDocument gericht = new GerichtDocument( nummer, name, version, null );
+
+        _gerichtRepo.save( gericht );
+
+        model.addAttribute( "gericht", gericht );
+        
+        return "gericht-detail"; // oder eigenes Erfolgs-Template
     }
 
-    final GerichtDocument gericht = new GerichtDocument( nummer, name, version, null );
+    /**
+     * Zeigt die Rückfrage vor dem Löschen eines Gerichts an.
+     *
+     * @param nummer Nummer des zu löschenden Gerichts.
+     * @param model Objekt für die Platzhalter im Template.
+     *
+     * @return Name der Template-Datei ohne Endung {@code .html}
+     */
+    @GetMapping( "/gerichte/{nummer}/loeschen" )
+    public String gerichtLoeschenBestaetigen( @PathVariable("nummer") String nummer, Model model ) {
 
-    _gerichtRepo.save( gericht );
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
-    model.addAttribute( "gericht", gericht );
-    return "gericht-detail"; // oder eigenes Erfolgs-Template
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        model.addAttribute( "gericht", gerichtOptional.get() );
+
+        return "gericht-loeschen";
     }
 
+    /**
+     * Löscht das Gericht mit der übergebenen Nummer.
+     *
+     * @param nummer Nummer des zu löschenden Gerichts.
+     * @param model Objekt für die Platzhalter im Template.
+     *
+     * @return Name der Template-Datei ohne Endung {@code .html} bzw. ein Redirect.
+     */
+    @PostMapping( "/gerichte/{nummer}/loeschen" )
+    public String gerichtLoeschen( @PathVariable("nummer") String nummer, Model model ) {
 
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        _gerichtRepo.delete( gerichtOptional.get() );
+
+        return "redirect:/gerichte";
+    }
 }
