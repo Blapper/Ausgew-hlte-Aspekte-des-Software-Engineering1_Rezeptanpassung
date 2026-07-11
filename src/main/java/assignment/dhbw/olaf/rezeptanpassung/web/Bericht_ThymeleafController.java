@@ -154,6 +154,85 @@ public class Bericht_ThymeleafController {
         return "redirect:/berichte/" + nummer;
     }
 
+    //Rückfrage vor dem Löschen eines Berichtes
+    @GetMapping( "/berichte/{nummer}/{berichtNummer}/loeschen" )
+    public String berichtLoeschenBestaetigen( @PathVariable("nummer") int nummer,
+                                               @PathVariable("berichtNummer") int berichtNummer,
+                                               Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final Optional<BerichtDocument> berichtOptional = _berichtRepo.findByGerichtIdAndNummer( gericht.getId(), berichtNummer );
+
+        if ( berichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Bericht mit Nummer \"%d\" für Gericht \"%s\" gefunden.", berichtNummer, nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        model.addAttribute( "gericht", gericht );
+        model.addAttribute( "bericht", berichtOptional.get() );
+
+        return "bericht-loeschen";
+    }
+
+    //Löschen eines Berichtes
+    @PostMapping( "/berichte/{nummer}/{berichtNummer}/loeschen" )
+    public String berichtLoeschen( @PathVariable("nummer") int nummer,
+                                    @PathVariable("berichtNummer") int berichtNummer,
+                                    Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final Optional<BerichtDocument> berichtOptional = _berichtRepo.findByGerichtIdAndNummer( gericht.getId(), berichtNummer );
+
+        if ( berichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Bericht mit Nummer \"%d\" für Gericht \"%s\" gefunden.", berichtNummer, nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        _berichtRepo.delete( berichtOptional.get() );
+
+        return "redirect:/berichte/" + nummer;
+    }
+
 }
 
 /** Anlegen eines neuen Gerichtes 

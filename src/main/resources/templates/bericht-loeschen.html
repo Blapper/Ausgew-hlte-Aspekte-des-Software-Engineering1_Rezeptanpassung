@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Bericht löschen</title>
+</head>
+<body>
+
+    <h1>Bericht löschen</h1>
+
+    <p>Soll der Bericht Nr. <strong th:text="${bericht.getNummer()}">1</strong> wirklich gelöscht werden?</p>
+
+    <form th:action="@{/berichte/{nummer}/{berichtNummer}/loeschen(nummer=${gericht.nummer}, berichtNummer=${bericht.getNummer()})}" method="post">
+        <button type="submit">Ja, löschen</button>
+    </form>
+
+    <p><a th:href="@{/berichte/{nummer}(nummer=${gericht.nummer})}">Abbrechen</a></p>
+
+</body>
+</html>

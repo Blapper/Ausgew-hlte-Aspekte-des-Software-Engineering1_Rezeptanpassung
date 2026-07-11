@@ -4,6 +4,8 @@
 <body>
     <h1>Alle Berichte</h1>
 
+    <p><a th:href="@{/gerichte}">Zurück zur Gerichteübersicht</a></p>
+
     <p th:if="${#lists.isEmpty(berichte)}">Es sind noch keine Berichte vorhanden.</p>
 
     <p><a th:href="@{/berichte/neu/{nummer}(nummer=${gericht.nummer})}">Neuen Bericht anlegen</a></p>
@@ -16,6 +18,7 @@
                 <th>Pfadfinder / 12 bis 16 Jahre</th>
                 <th>Ranger/Rover / älter als 16 </th>
                 <th>Prozentualer Überschuss</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +28,7 @@
                 <td th:text="${bericht.getanzahlPfadfinder()}">8</td>
                 <td th:text="${bericht.getanzahlRangerRover()}">5</td>
                 <td th:text="${bericht.getprozentualerUeberschuss()}">10.0</td>
+                <td><a th:href="@{/berichte/{nummer}/{berichtNummer}/loeschen(nummer=${gericht.nummer}, berichtNummer=${bericht.getNummer()})}">Löschen</a></td>
             </tr>
         </tbody>
     </table>
