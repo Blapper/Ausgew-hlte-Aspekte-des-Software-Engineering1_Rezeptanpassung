@@ -15,9 +15,9 @@ public class GerichtDocument {
 
     @Indexed(unique = true)
     @Field("nummer")
-    private String nummer;
+    private int nummer;
     private String name;
-    private String version;
+    private int version;
     private List<Zutat> zutatenlisteProPerson;
 
 /** Default-Konstruktor. */
@@ -27,7 +27,7 @@ public class GerichtDocument {
     /**
      * Konstruktor, für neue Rezepte.
      */
-    public GerichtDocument( String nummer, String name, String version, List<Zutat> zutatenlisteProPerson ) {
+    public GerichtDocument( int nummer, String name, int version, List<Zutat> zutatenlisteProPerson ) {
 
         this.nummer                 = nummer;
         this.name                   = name;
@@ -37,14 +37,14 @@ public class GerichtDocument {
 
     public ObjectId getId() { return id; }
 
-    public String getNummer() { return nummer; }
-    public void setNummer(String nummer) { this.nummer = nummer; }
+    public int getNummer() { return nummer; }
+    public void setNummer(int nummer) { this.nummer = nummer; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getVersion() { return version; }
-    public void setVersion(String version) { this.version = version; }
+    public int getVersion() { return version; }
+    public void setVersion(int version) { this.version = version; }
 
     public List<Zutat> getZutatenlisteProPerson() { return zutatenlisteProPerson; }
 

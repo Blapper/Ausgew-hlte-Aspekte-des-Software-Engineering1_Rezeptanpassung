@@ -40,7 +40,7 @@ public class DemoDatenImporter implements ApplicationRunner {
         LOG.info( "DB enthält keine Gerichte, lade jetzt Demo-Daten ..." );
 
         final Zutat mehl = new Zutat( "Mehl", 250.0, "g" );
-        createGericht( "G-001", "Pfannkuchen", "v1", List.of( mehl ) );
+        createGericht( 1, "Pfannkuchen", 1, List.of( mehl ) );
 
         final long anzahlGerichte = _gerichtRepo.count();
         LOG.info( "Es sind jetzt {} Gerichte in der DB gespeichert.", anzahlGerichte );
@@ -54,7 +54,7 @@ public class DemoDatenImporter implements ApplicationRunner {
     /**
      * Hilfsmethode zum Anlegen eines Gerichtes.
      */
-    private void createGericht( String nummer, String name, String version, List<Zutat> zutatenlisteProPerson ) {
+    private void createGericht( int nummer, String name, int version, List<Zutat> zutatenlisteProPerson ) {
 
         final GerichtDocument gericht = new GerichtDocument( nummer, name, version, zutatenlisteProPerson );
         

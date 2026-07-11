@@ -57,7 +57,7 @@ public class Gericht_ThymeleafController {
 
     /** Auswahl eines spezifischen Gerichtes */
     @GetMapping( "/gerichte/{nummer}" )
-    public String gerichtDetail( @PathVariable("nummer") String nummer, Model model ) {
+    public String gerichtDetail( @PathVariable("nummer") int nummer, Model model ) {
 
     final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
@@ -89,24 +89,24 @@ public class Gericht_ThymeleafController {
     /** Speichern eines neuen Gerichtes */
     @PostMapping( "/gerichte/neu" )
     public String gerichtNeuSpeichern( Model model,
-                                    @RequestParam("nummer") String nummer,
-                                    @RequestParam("name") String name,
-                                    @RequestParam("version") String version ) {
+                                    @RequestParam("name") String name ) {
 
-        final Optional<GerichtDocument> vorhanden = _gerichtRepo.findByNummer( nummer );
-                                    
+        if ( name.isBlank() ) {
 
-         if ( vorhanden.isPresent() ) {
+            final String meldung = "Name darf nicht leer sein.";
 
-         final String meldung = format( "Gericht mit Nummer \"%s\" existiert bereits.", nummer );
+            LOG.warn( meldung );
 
-         LOG.warn( meldung );
+            model.addAttribute( "fehlermeldung", meldung );
 
-          model.addAttribute( "fehlermeldung", meldung );
-          return "fehler";
-            }
+            return "fehler";
+        }
 
-        final GerichtDocument gericht = new GerichtDocument( nummer, name, version, null );
+        final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
+
+        final int naechsteNummer = hoechstesGericht.map( GerichtDocument::getNummer ).orElse( 0 ) + 1;
+
+        final GerichtDocument gericht = new GerichtDocument( naechsteNummer, name, 1, null );
 
         _gerichtRepo.save( gericht );
 
@@ -117,7 +117,7 @@ public class Gericht_ThymeleafController {
 
     /** Löschen eines Gerichtes */
     @GetMapping( "/gerichte/{nummer}/loeschen" )
-    public String gerichtLoeschenBestaetigen( @PathVariable("nummer") String nummer, Model model ) {
+    public String gerichtLoeschenBestaetigen( @PathVariable("nummer") int nummer, Model model ) {
 
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
@@ -139,7 +139,7 @@ public class Gericht_ThymeleafController {
 
 
     @PostMapping( "/gerichte/{nummer}/loeschen" )
-    public String gerichtLoeschen( @PathVariable("nummer") String nummer, Model model ) {
+    public String gerichtLoeschen( @PathVariable("nummer") int nummer, Model model ) {
 
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
@@ -162,7 +162,7 @@ public class Gericht_ThymeleafController {
     /**Hinzufügen einer Zutat */
     
     @GetMapping( "/gerichte/{nummer}/zutaten/neu" )
-    public String zutatNeuFormular( @PathVariable("nummer") String nummer, Model model ) {
+    public String zutatNeuFormular( @PathVariable("nummer") int nummer, Model model ) {
 
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
@@ -184,7 +184,7 @@ public class Gericht_ThymeleafController {
 
     /**Posten der Zutat */
     @PostMapping( "/gerichte/{nummer}/zutaten/neu" )
-    public String zutatNeuSpeichern( @PathVariable("nummer") String nummer,
+    public String zutatNeuSpeichern( @PathVariable("nummer") int nummer,
                                       @RequestParam("name") String name,
                                       @RequestParam("menge") double menge,
                                       @RequestParam("einheit") String einheit,
@@ -195,6 +195,39 @@ public class Gericht_ThymeleafController {
         if ( gerichtOptional.isEmpty() ) {
 
             final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( name.isBlank() ) {
+
+            final String meldung = "Name der Zutat darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( menge <= 0 ) {
+
+            final String meldung = "Menge muss größer als 0 sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( einheit.isBlank() ) {
+
+            final String meldung = "Einheit darf nicht leer sein.";
 
             LOG.warn( meldung );
 
@@ -221,7 +254,7 @@ public class Gericht_ThymeleafController {
 
    /**Löschen der Zutat */
     @GetMapping( "/gerichte/{nummer}/zutaten/{index}/loeschen" )
-    public String zutatLoeschenBestaetigen( @PathVariable("nummer") String nummer,
+    public String zutatLoeschenBestaetigen( @PathVariable("nummer") int nummer,
                                              @PathVariable("index") int index,
                                              Model model ) {
 
@@ -251,7 +284,7 @@ public class Gericht_ThymeleafController {
 
     /**Bestätigung der Löschung der Zutat */
     @PostMapping( "/gerichte/{nummer}/zutaten/{index}/loeschen" )
-    public String zutatLoeschen( @PathVariable("nummer") String nummer,
+    public String zutatLoeschen( @PathVariable("nummer") int nummer,
                                   @PathVariable("index") int index,
                                   Model model ) {
 
