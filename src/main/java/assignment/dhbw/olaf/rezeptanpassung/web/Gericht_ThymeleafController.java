@@ -24,9 +24,9 @@ import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
  * Controller für Thymeleaf-Templates zur Gerichte-Verwaltung.
  */
 @Controller
-public class ThymeleafController {
+public class Gericht_ThymeleafController {
 
-    private final static Logger LOG = LoggerFactory.getLogger( ThymeleafController.class );
+    private final static Logger LOG = LoggerFactory.getLogger( Gericht_ThymeleafController.class );
 
     /** Repo-Bean für Zugriff auf MongoDB-Collection mit Gerichten. */
     @Autowired
