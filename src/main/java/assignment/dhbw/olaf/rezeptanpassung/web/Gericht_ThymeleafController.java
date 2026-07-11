@@ -1,5 +1,6 @@
 package assignment.dhbw.olaf.rezeptanpassung.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static java.lang.String.format;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtDocument;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
+import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
 
 
 /**
@@ -49,7 +51,7 @@ public class Gericht_ThymeleafController {
 
         model.addAttribute( "gerichte", gerichte );
 
-        return "gerichte-liste";
+        return "gericht-liste";
     }
 
     @GetMapping( "/gerichte/{nummer}" )
@@ -185,5 +187,81 @@ public class Gericht_ThymeleafController {
         _gerichtRepo.delete( gerichtOptional.get() );
 
         return "redirect:/gerichte";
+    }
+
+    /**
+     * Zeigt das Formular zum Hinzufügen einer Zutat zu einem Gericht an.
+     *
+     * @param nummer Nummer des Gerichts.
+     * @param model Objekt für die Platzhalter im Template.
+     *
+     * @return Name der Template-Datei ohne Endung {@code .html}
+     */
+    @GetMapping( "/gerichte/{nummer}/zutaten/neu" )
+    public String zutatNeuFormular( @PathVariable("nummer") String nummer, Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        model.addAttribute( "gericht", gerichtOptional.get() );
+
+        return "zutat-neu";
+    }
+
+    /**
+     * Verarbeitet das Absenden des Formulars zum Hinzufügen einer Zutat.
+     *
+     * @param nummer Nummer des Gerichts.
+     * @param name Name der Zutat.
+     * @param menge Menge der Zutat.
+     * @param einheit Einheit der Menge.
+     * @param model Objekt für die Platzhalter im Template.
+     *
+     * @return Redirect zurück zum Formular.
+     */
+    @PostMapping( "/gerichte/{nummer}/zutaten/neu" )
+    public String zutatNeuSpeichern( @PathVariable("nummer") String nummer,
+                                      @RequestParam("name") String name,
+                                      @RequestParam("menge") double menge,
+                                      @RequestParam("einheit") String einheit,
+                                      Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final List<Zutat> vorhandeneZutaten = gericht.getZutatenlisteProPerson();
+
+        final List<Zutat> neueZutatenliste =
+                     new ArrayList<>( vorhandeneZutaten == null ? List.of() : vorhandeneZutaten );
+
+        neueZutatenliste.add( new Zutat( name, menge, einheit ) );
+
+        gericht.setZutatenlisteProPerson( neueZutatenliste );
+
+        _gerichtRepo.save( gericht );
+
+        return "redirect:/gerichte/" + nummer + "/zutaten/neu";
     }
 }

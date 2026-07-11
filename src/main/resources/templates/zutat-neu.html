@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Zutat hinzufügen</title>
+</head>
+<body>
+
+    <h1>Zutat zu <span th:text="${gericht.name}">Gericht</span> hinzufügen</h1>
+
+    <form th:action="@{/gerichte/{nummer}/zutaten/neu(nummer=${gericht.nummer})}" method="post">
+        <label>Name: <input type="text" name="name" required="required"></label><br>
+        <label>Menge: <input type="number" step="any" name="menge" required="required"></label><br>
+        <label>Einheit: <input type="text" name="einheit" required="required"></label><br>
+        <button type="submit">Zutat speichern</button>
+    </form>
+
+    <h2>Bisher erfasste Zutaten</h2>
+
+    <p th:if="${#lists.isEmpty(gericht.zutatenlisteProPerson)}">Noch keine Zutaten hinterlegt.</p>
+
+    <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(gericht.zutatenlisteProPerson)}">
+        <thead>
+            <tr>
+                <th>Zutat</th>
+                <th>Menge</th>
+                <th>Einheit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="zutat : ${gericht.zutatenlisteProPerson}">
+                <td th:text="${zutat.name}">Mehl</td>
+                <td th:text="${zutat.menge}">100</td>
+                <td th:text="${zutat.einheit}">g</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/gerichte/{nummer}(nummer=${gericht.nummer})}">Fertig – zurück zum Gericht</a></p>
+
+</body>
+</html>
