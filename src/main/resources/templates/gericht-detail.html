@@ -4,7 +4,9 @@
 <body>
     <h1 th:text="${gericht.name}">Gerichtname</h1>
 
-    <p><a th:href="@{/gerichte}">Zurück zur Gerichte-Liste</a></p>
+    <p><a th:href="@{/gerichte}">Zurück zur Gerichteübersicht</a></p>
+
+    <p><a th:href="@{/berichte}">Weiter zu den Berichten</a></p>
 
     <p><a th:href="@{/gerichte/{nummer}/loeschen(nummer=${gericht.nummer})}">Gericht löschen</a></p>
 
