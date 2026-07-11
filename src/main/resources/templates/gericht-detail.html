@@ -35,13 +35,15 @@
                 <th>Zutat</th>
                 <th>Menge</th>
                 <th>Einheit</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="zutat : ${gericht.zutatenlisteProPerson}">
+            <tr th:each="zutat, iter : ${gericht.zutatenlisteProPerson}">
                 <td th:text="${zutat.name}">Mehl</td>
                 <td th:text="${zutat.menge}">100</td>
                 <td th:text="${zutat.einheit}">g</td>
+                <td><a th:href="@{/gerichte/{nummer}/zutaten/{index}/loeschen(nummer=${gericht.nummer}, index=${iter.index})}">Löschen</a></td>
             </tr>
         </tbody>
     </table>

@@ -42,6 +42,7 @@ public class Gericht_ThymeleafController {
      * @return Name der Template-Datei ohne Endung {@code .html}
      */
 
+    /** Zeigt  alle Gerichte an */
     @GetMapping( "/gerichte" )
     public String gerichteListe( Model model ) {
 
@@ -54,6 +55,7 @@ public class Gericht_ThymeleafController {
         return "gericht-liste";
     }
 
+    /** Auswahl eines spezifischen Gerichtes */
     @GetMapping( "/gerichte/{nummer}" )
     public String gerichtDetail( @PathVariable("nummer") String nummer, Model model ) {
 
@@ -77,32 +79,14 @@ public class Gericht_ThymeleafController {
     return "gericht-detail";
     }
 
-
-    /**
-     * Zeigt das leere Formular zum Anlegen eines neuen Gerichts.
-     *
-     * @param model Objekt für die Platzhalter im Template.
-     *
-     * @return Name der Template-Datei ohne Endung {@code .html}
-     */
+    /** Anlegen eines neuen Gerichtes */
     @GetMapping( "/gerichte/neu" )
     public String gerichtNeuFormular( Model model ) {
 
     return "gericht-neu";
     }
-
-
-    /**
-     * Verarbeitet das Absenden des Formulars zum Anlegen eines neuen Gerichts.
-     *
-     * @param model Objekt für die Platzhalter im Template.
-     * @param nummer Eingegebene Nummer.
-     * @param name Eingegebener Name.
-     * @param version Eingegebene Version.
-     *
-     * @return Name der Template-Datei ohne Endung {@code .html}
-     */
     
+    /** Speichern eines neuen Gerichtes */
     @PostMapping( "/gerichte/neu" )
     public String gerichtNeuSpeichern( Model model,
                                     @RequestParam("nummer") String nummer,
@@ -131,14 +115,7 @@ public class Gericht_ThymeleafController {
         return "gericht-detail"; // oder eigenes Erfolgs-Template
     }
 
-    /**
-     * Zeigt die Rückfrage vor dem Löschen eines Gerichts an.
-     *
-     * @param nummer Nummer des zu löschenden Gerichts.
-     * @param model Objekt für die Platzhalter im Template.
-     *
-     * @return Name der Template-Datei ohne Endung {@code .html}
-     */
+    /** Löschen eines Gerichtes */
     @GetMapping( "/gerichte/{nummer}/loeschen" )
     public String gerichtLoeschenBestaetigen( @PathVariable("nummer") String nummer, Model model ) {
 
@@ -160,14 +137,7 @@ public class Gericht_ThymeleafController {
         return "gericht-loeschen";
     }
 
-    /**
-     * Löscht das Gericht mit der übergebenen Nummer.
-     *
-     * @param nummer Nummer des zu löschenden Gerichts.
-     * @param model Objekt für die Platzhalter im Template.
-     *
-     * @return Name der Template-Datei ohne Endung {@code .html} bzw. ein Redirect.
-     */
+
     @PostMapping( "/gerichte/{nummer}/loeschen" )
     public String gerichtLoeschen( @PathVariable("nummer") String nummer, Model model ) {
 
@@ -189,14 +159,8 @@ public class Gericht_ThymeleafController {
         return "redirect:/gerichte";
     }
 
-    /**
-     * Zeigt das Formular zum Hinzufügen einer Zutat zu einem Gericht an.
-     *
-     * @param nummer Nummer des Gerichts.
-     * @param model Objekt für die Platzhalter im Template.
-     *
-     * @return Name der Template-Datei ohne Endung {@code .html}
-     */
+    /**Hinzufügen einer Zutat */
+    
     @GetMapping( "/gerichte/{nummer}/zutaten/neu" )
     public String zutatNeuFormular( @PathVariable("nummer") String nummer, Model model ) {
 
@@ -218,17 +182,7 @@ public class Gericht_ThymeleafController {
         return "zutat-neu";
     }
 
-    /**
-     * Verarbeitet das Absenden des Formulars zum Hinzufügen einer Zutat.
-     *
-     * @param nummer Nummer des Gerichts.
-     * @param name Name der Zutat.
-     * @param menge Menge der Zutat.
-     * @param einheit Einheit der Menge.
-     * @param model Objekt für die Platzhalter im Template.
-     *
-     * @return Redirect zurück zum Formular.
-     */
+    /**Posten der Zutat */
     @PostMapping( "/gerichte/{nummer}/zutaten/neu" )
     public String zutatNeuSpeichern( @PathVariable("nummer") String nummer,
                                       @RequestParam("name") String name,
@@ -263,5 +217,67 @@ public class Gericht_ThymeleafController {
         _gerichtRepo.save( gericht );
 
         return "redirect:/gerichte/" + nummer + "/zutaten/neu";
+    }
+
+   /**Löschen der Zutat */
+    @GetMapping( "/gerichte/{nummer}/zutaten/{index}/loeschen" )
+    public String zutatLoeschenBestaetigen( @PathVariable("nummer") String nummer,
+                                             @PathVariable("index") int index,
+                                             Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final Zutat zutat = gericht.getZutatenlisteProPerson().get( index );
+
+        model.addAttribute( "gericht", gericht );
+        model.addAttribute( "zutat", zutat );
+        model.addAttribute( "index", index );
+
+        return "zutat-loeschen";
+    }
+
+    /**Bestätigung der Löschung der Zutat */
+    @PostMapping( "/gerichte/{nummer}/zutaten/{index}/loeschen" )
+    public String zutatLoeschen( @PathVariable("nummer") String nummer,
+                                  @PathVariable("index") int index,
+                                  Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final List<Zutat> neueZutatenliste = new ArrayList<>( gericht.getZutatenlisteProPerson() );
+
+        neueZutatenliste.remove( index );
+
+        gericht.setZutatenlisteProPerson( neueZutatenliste );
+
+        _gerichtRepo.save( gericht );
+
+        return "redirect:/gerichte/" + nummer;
     }
 }
