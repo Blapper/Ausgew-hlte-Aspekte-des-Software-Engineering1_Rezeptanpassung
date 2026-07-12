@@ -46,6 +46,7 @@
                 <td th:text="${zutat.menge}">100</td>
                 <td th:text="${zutat.einheit}">g</td>
                 <td><a th:href="@{/gerichte/{nummer}/zutaten/{index}/loeschen(nummer=${gericht.nummer}, index=${iter.index})}">Löschen</a></td>
+                <td><a th:href="@{/gerichte/{nummer}/zutaten/{index}/aendern(nummer=${gericht.nummer}, index=${iter.index})}">Ändern</a></td>
             </tr>
         </tbody>
     </table>

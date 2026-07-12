@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Zutat ändern</title>
+</head>
+<body>
+
+    <h1>Zutat zu <span th:text="${gericht.name}">Gericht</span> ändern</h1>
+
+    <form id="zutat-aendern-form" th:action="@{/gerichte/{nummer}/zutaten/{index}/aendern(nummer=${gericht.nummer}, index=${index})}" method="post"></form>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Zutat</th>
+                <th>Menge</th>
+                <th>Einheit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td th:text="${zutat.name}">Mehl</td>
+                <td th:text="${zutat.menge}">100</td>
+                <td th:text="${zutat.einheit}">g</td>
+            </tr>
+            <tr>
+                <td><input form="zutat-aendern-form" type="text" name="name" placeholder="Name"></td>
+                <td><input form="zutat-aendern-form" type="number" step="any" name="menge" placeholder="Menge"></td>
+                <td><input form="zutat-aendern-form" type="text" name="einheit" placeholder="Einheit"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><button form="zutat-aendern-form" type="submit">Ändern</button></p>
+
+    <p><a th:href="@{/gerichte/{nummer}(nummer=${gericht.nummer})}">Zurück zum Gericht</a></p>
+
+</body>
+</html>

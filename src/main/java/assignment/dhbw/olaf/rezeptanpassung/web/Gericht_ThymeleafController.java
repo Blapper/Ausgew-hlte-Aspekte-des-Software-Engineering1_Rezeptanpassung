@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.bson.types.ObjectId;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import assignment.dhbw.olaf.rezeptanpassung.db.BerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtDocument;
@@ -46,6 +47,13 @@ public class Gericht_ThymeleafController {
      *
      * @return Name der Template-Datei ohne Endung {@code .html}
      */
+
+    /** Leitet von der Startseite direkt auf die Gerichte-Liste weiter. */
+    @GetMapping( "/" )
+    public String start() {
+
+        return "redirect:/gerichte";
+    }
 
     /** Zeigt  alle Gerichte an */
     @GetMapping( "/gerichte" )
@@ -322,4 +330,137 @@ public class Gericht_ThymeleafController {
 
         return "redirect:/gerichte/" + nummer;
     }
+
+    /**Ändern der Zutat */
+    @GetMapping( "/gerichte/{nummer}/zutaten/{index}/aendern" )
+    public String zutatAendernFormular( @PathVariable("nummer") int nummer,
+                                             @PathVariable("index") int index,
+                                             Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final List<Zutat> zutaten = gericht.getZutatenlisteProPerson();
+
+         if ( zutaten == null || zutaten.isEmpty() ) {
+
+            final String meldung = format( "Keine Zutaten mit Nummer \"%s\" gefunden.", index );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final Zutat zutat = zutaten.get( index );
+
+        model.addAttribute( "gericht", gericht );
+        model.addAttribute( "zutat", zutat );
+        model.addAttribute( "index", index );
+
+        return "zutat-aendern";
+    }
+
+    /**Update der Zutat- Änderung */
+    @PostMapping( "/gerichte/{nummer}/zutaten/{index}/aendern" )
+    public String zutatAenderungSpeichern( @PathVariable("nummer") int nummer,
+                                    @PathVariable("index") int index,
+                                    @RequestParam(value = "name", required = false) String name,
+                                    @RequestParam(value = "menge", required = false) Double menge, // Double wegen null-Fehler
+                                    @RequestParam(value = "einheit", required = false) String einheit,
+                                    Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final boolean nameLeer    = name == null || name.isBlank();
+        final boolean mengeLeer   = menge == null;
+        final boolean einheitLeer = einheit == null || einheit.isBlank();
+
+        if ( nameLeer && mengeLeer && einheitLeer ) {
+
+            final String meldung = "Mindestens ein Feld muss ausgefüllt sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !mengeLeer && menge <= 0 ) {
+
+            final String meldung = "Menge muss größer als 0 sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final List<Zutat> vorhandeneZutaten = gericht.getZutatenlisteProPerson();
+
+        final Zutat alteZutat = vorhandeneZutaten.get( index );
+
+        final List<Zutat> neueZutatenliste = new ArrayList<>( vorhandeneZutaten );
+
+        /**Überschrieben der leeren Felder */
+        
+        final String neuerName;
+        final double neueMenge;
+        final String neueEinheit;
+
+        if ( nameLeer ) {
+
+            neuerName = alteZutat.name();
+
+        } else { neuerName = name;}
+
+        if ( mengeLeer ) {
+
+            neueMenge = alteZutat.menge();
+
+            } else {neueMenge = menge;}
+
+        if ( einheitLeer ) {
+
+            neueEinheit = alteZutat.einheit();
+
+            } else {neueEinheit = einheit;}
+        
+        neueZutatenliste.set(index, new Zutat( neuerName, neueMenge, neueEinheit ) );
+
+        gericht.setZutatenlisteProPerson( neueZutatenliste );
+
+        _gerichtRepo.save( gericht );
+
+        return "redirect:/gerichte/" + nummer;
+    }
+    
 }
