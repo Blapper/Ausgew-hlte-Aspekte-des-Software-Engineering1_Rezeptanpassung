@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.bson.types.ObjectId;
 
+import assignment.dhbw.olaf.rezeptanpassung.db.BerichtDocument;
+import assignment.dhbw.olaf.rezeptanpassung.db.BerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtDocument;
 import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
+import assignment.dhbw.olaf.rezeptanpassung.db.ZutatUeberschuss;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +32,9 @@ public class DemoDatenImporter implements ApplicationRunner {
     /** Repo-Objekt für Zugriff auf Mongodb-Collection. */
     @Autowired
     private GerichtRepo _gerichtRepo; 
+
+    @Autowired
+    private BerichtRepo _berichtRepo;
     
     
     /**
@@ -35,6 +43,7 @@ public class DemoDatenImporter implements ApplicationRunner {
     @Override
     public void run( ApplicationArguments args ) throws Exception {
 
+
     if ( _gerichtRepo.count() == 0 ) {
 
         LOG.info( "DB enthält keine Gerichte, lade jetzt Demo-Daten ..." );
@@ -42,12 +51,23 @@ public class DemoDatenImporter implements ApplicationRunner {
         final Zutat mehl = new Zutat( "Mehl", 250.0, "g" );
         createGericht( 1, "Pfannkuchen", 1, List.of( mehl ) );
 
-        final long anzahlGerichte = _gerichtRepo.count();
-        LOG.info( "Es sind jetzt {} Gerichte in der DB gespeichert.", anzahlGerichte );
+
+        final Optional<GerichtDocument> gerichtOptional = 
+                _gerichtRepo.findByNummer( 1 ); // Nummer des Demo-Gerichtes ist bekannt
+
+        ObjectId gerichtId = gerichtOptional.get().getId();
+
+        List<ZutatUeberschuss> ueberschuesse = List.of(new ZutatUeberschuss("Mehl", 5.0));
+
+        BerichtDocument bericht = new BerichtDocument(gerichtId, 1, 10, 5, 6, ueberschuesse);
+
+        _berichtRepo.save(bericht);
+
+        LOG.info( "Es sind jetzt {} Gericht und {} Bericht in der DB gespeichert.", _gerichtRepo.count(), _berichtRepo.count() );
 
         } else {
 
-        LOG.info( "Es sind schon {} Gerichte in der DB gespeichert, lade keine Demo-Daten.", _gerichtRepo.count() );
+        LOG.info( "Es sind schon {} Gerichte und {} Berichte in der DB gespeichert, lade keine Demo-Daten.", _gerichtRepo.count(), _berichtRepo.count() );
         }
     }
   
