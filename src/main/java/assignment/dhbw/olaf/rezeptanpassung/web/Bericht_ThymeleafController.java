@@ -301,7 +301,23 @@ public class Bericht_ThymeleafController {
 
         final BerichtDocument bericht = berichtOptional.get();
 
-        final GerichtDocument neuesGericht = _uebertragenService.uebertrageBericht( gericht, bericht );
+        final GerichtDocument neuesGericht;
+
+        try {
+
+            neuesGericht = _uebertragenService.uebertrageBericht( gericht, bericht );
+
+        } catch ( RuntimeException e ) {
+
+            final String meldung = format( "Der Bericht \"%d\" konnte nicht übertragen werden: %s",
+                                            berichtNummer, e.getMessage() );
+
+            LOG.warn( meldung, e );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
 
         return "redirect:/gerichte/" + neuesGericht.getNummer();
     }

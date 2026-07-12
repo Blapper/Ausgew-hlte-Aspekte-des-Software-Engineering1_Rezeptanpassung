@@ -30,6 +30,25 @@ public class UebertragenService {
      */
     public GerichtDocument uebertrageBericht( GerichtDocument altesGericht, BerichtDocument bericht ) {
 
+        if ( altesGericht == null ) {
+
+            throw new IllegalArgumentException( "Gericht darf nicht null sein." );
+        }
+
+        if ( bericht == null ) {
+
+            throw new IllegalArgumentException( "Bericht darf nicht null sein." );
+        }
+
+        if ( altesGericht.getZutatenlisteProPerson() == null ) {
+
+            throw new IllegalArgumentException( "Die Zutatenliste des Gerichts darf nicht null sein." );
+        }
+
+        if ( bericht.getZutatenUeberschuesse() == null ) {
+
+            throw new IllegalArgumentException( "Die Zutaten-Überschüsse des Berichts dürfen nicht null sein." );
+        }
 
         final List<ZutatUeberschuss> ueberschuesse = new ArrayList<>( bericht.getZutatenUeberschuesse() );
 
@@ -57,7 +76,8 @@ public class UebertragenService {
         }
 
         final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
-        final int neueNummer = hoechstesGericht.get().getNummer() + 1;
+
+        final int neueNummer = hoechstesGericht.getNummer() + 1;
 
         final GerichtDocument neuesGericht = new GerichtDocument(
                 neueNummer,
