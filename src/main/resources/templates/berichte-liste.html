@@ -42,6 +42,7 @@
                 <th>Ranger/Rover / älter als 16 </th>
                 <th>Prozentualer Überschuss pro Zutat</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -59,6 +60,12 @@
                     </table>
                 </td>
                 <td><a th:href="@{/berichte/{nummer}/{berichtNummer}/loeschen(nummer=${gericht.nummer}, berichtNummer=${bericht.getNummer()})}">Löschen</a></td>
+                <td>
+                    <form th:action="@{/berichte/{nummer}/{berichtNummer}/uebertragen(nummer=${gericht.nummer}, berichtNummer=${bericht.getNummer()})}"
+                          method="post" style="display:inline">
+                        <button type="submit">Übertragen</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>

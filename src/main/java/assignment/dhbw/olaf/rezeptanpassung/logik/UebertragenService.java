@@ -39,7 +39,19 @@ public class UebertragenService {
 
             final Zutat alteZutat = altesGericht.getZutatenlisteProPerson().get( i );
 
-            final Zutat neueZutat = new Zutat( alteZutat.name(), alteZutat.menge() * 2, alteZutat.einheit() );
+            double prozentUeberschuss = 0.0;
+
+            for ( int j = 0; j < ueberschuesse.size(); j++ ) {
+
+                if ( ueberschuesse.get( j ).zutatName().equals( alteZutat.name() ) ) {
+
+                    prozentUeberschuss = ueberschuesse.get( j ).prozentualerUeberschuss();
+                }
+            }
+
+            final double neueMenge = bestimmeVeraenderung( alteZutat.menge(), prozentUeberschuss );
+
+            final Zutat neueZutat = new Zutat( alteZutat.name(), neueMenge, alteZutat.einheit() );
 
             neueZutaten.add( neueZutat );
         }
@@ -54,6 +66,13 @@ public class UebertragenService {
                 neueZutaten );
 
         return _gerichtRepo.save( neuesGericht );
+    }
+
+     private double bestimmeVeraenderung( double menge, double prozentUeberschuss ) {
+
+        final double veraenderung = 1 + ( prozentUeberschuss / 100 * ( -1 ) );
+
+        return menge * veraenderung;
     }
 
 }
