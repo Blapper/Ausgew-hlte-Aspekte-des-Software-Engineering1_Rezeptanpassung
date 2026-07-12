@@ -6,6 +6,29 @@
 
     <p><a th:href="@{/gerichte}">Zurück zur Gerichteübersicht</a></p>
 
+    <h2>Zutaten pro Person</h2>
+
+    <p th:if="${#lists.isEmpty(gericht.zutatenlisteProPerson)}">Keine Zutaten hinterlegt.</p>
+
+    <table border="1" cellpadding="5" cellspacing="0" th:if="${not #lists.isEmpty(gericht.zutatenlisteProPerson)}">
+        <thead>
+            <tr>
+                <th>Zutat</th>
+                <th>Menge</th>
+                <th>Einheit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="zutat : ${gericht.zutatenlisteProPerson}">
+                <td th:text="${zutat.name}">Mehl</td>
+                <td th:text="${zutat.menge}">100</td>
+                <td th:text="${zutat.einheit}">g</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Berichte</h2>
+
     <p th:if="${#lists.isEmpty(berichte)}">Es sind noch keine Berichte vorhanden.</p>
 
     <p><a th:href="@{/berichte/neu/{nummer}(nummer=${gericht.nummer})}">Neuen Bericht anlegen</a></p>
@@ -17,7 +40,7 @@
                 <th>Wölflinge / Grundschüler</th>
                 <th>Pfadfinder / 12 bis 16 Jahre</th>
                 <th>Ranger/Rover / älter als 16 </th>
-                <th>Prozentualer Überschuss</th>
+                <th>Prozentualer Überschuss pro Zutat</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,7 +50,14 @@
                 <td th:text="${bericht.getanzahlWoelflinge()}">10</td>
                 <td th:text="${bericht.getanzahlPfadfinder()}">8</td>
                 <td th:text="${bericht.getanzahlRangerRover()}">5</td>
-                <td th:text="${bericht.getprozentualerUeberschuss()}">10.0</td>
+                <td>
+                    <table border="1" cellpadding="3" cellspacing="0">
+                        <tr th:each="zutatUeberschuss : ${bericht.zutatenUeberschuesse}">
+                            <td th:text="${zutatUeberschuss.zutatName()}">Mehl</td>
+                            <td th:text="${zutatUeberschuss.prozentualerUeberschuss()} + ' %'">10 %</td>
+                        </tr>
+                    </table>
+                </td>
                 <td><a th:href="@{/berichte/{nummer}/{berichtNummer}/loeschen(nummer=${gericht.nummer}, berichtNummer=${bericht.getNummer()})}">Löschen</a></td>
             </tr>
         </tbody>

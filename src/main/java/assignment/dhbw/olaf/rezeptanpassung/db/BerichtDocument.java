@@ -1,6 +1,7 @@
 package assignment.dhbw.olaf.rezeptanpassung.db;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
@@ -16,7 +17,7 @@ public class BerichtDocument {
     private int anzahlWoelflinge;
     private int anzahlPfadfinder;
     private int anzahlRangerRover;
-    private double prozentualerUeberschuss;
+    private List<ZutatUeberschuss> zutatenUeberschuesse;
 
 
     /** Default-Konstruktor. */
@@ -26,14 +27,14 @@ public class BerichtDocument {
      * Konstruktor, für neue Rezepte.
      */
     public BerichtDocument( ObjectId gerichtId, int nummer, int anzahlWoelflinge, int anzahlPfadfinder, int anzahlRangerRover,
-                            double prozentualerUeberschuss){
+                            List<ZutatUeberschuss> zutatenUeberschuesse){
 
         this.gerichtId                  = gerichtId;
         this.nummer                     = nummer;
         this.anzahlWoelflinge           = anzahlWoelflinge;
         this.anzahlPfadfinder           = anzahlPfadfinder;
         this.anzahlRangerRover          = anzahlRangerRover;
-        this.prozentualerUeberschuss    = prozentualerUeberschuss;
+        this.zutatenUeberschuesse       = zutatenUeberschuesse;
     }
 
     public ObjectId getId() { return id; }
@@ -51,8 +52,8 @@ public class BerichtDocument {
     public int getanzahlRangerRover() { return anzahlRangerRover; }
     public void setanzahlRangerRover(int anzahlRangerRover) { this.anzahlRangerRover = anzahlRangerRover; }
 
-    public double getprozentualerUeberschuss() { return prozentualerUeberschuss; }
-    public void setprozentualerUeberschuss(double prozentualerUeberschuss) { this.prozentualerUeberschuss = prozentualerUeberschuss; }
+    public List<ZutatUeberschuss> getZutatenUeberschuesse() { return zutatenUeberschuesse; }
+    public void setZutatenUeberschuesse(List<ZutatUeberschuss> zutatenUeberschuesse) { this.zutatenUeberschuesse = zutatenUeberschuesse; }
 
 
      @Override // Ohne diese Funktion wird im Fall einer falschen Notation die Speicheradresse ausgegeben
@@ -61,7 +62,7 @@ public class BerichtDocument {
          + " (Woelflinge: " + anzahlWoelflinge
          + ", Pfadfinder: " + anzahlPfadfinder
          + ", RangerRover: " + anzahlRangerRover
-         + ", Überschuss: " + prozentualerUeberschuss + "%)";
+         + ", Zutaten-Überschüsse: " + zutatenUeberschuesse + ")";
     } 
 
 }

@@ -11,7 +11,14 @@
         <label>Wölflinge / Grundschüler: <input type="number" name="anzahlWoelflinge" required="required"></label><br>
         <label>Pfadfinder / 12 bis 16 Jahre: <input type="number" name="anzahlPfadfinder" required="required"></label><br>
         <label>Ranger/Rover / älter als 16: <input type="number" name="anzahlRangerRover" required="required"></label><br>
-        <label>Prozentualer Überschuss: <input type="number" step="any" name="prozentualerUeberschuss" required="required"></label><br>
+
+        <h2>Prozentualer Überschuss pro Zutat</h2>
+
+        <div th:each="zutat : ${gericht.zutatenlisteProPerson}">
+            <label th:text="${zutat.name} + ' – Prozentualer Überschuss (%):'">Zutat</label>
+            <input type="number" step="any" name="ueberschuss" required="required">
+        </div>
+
         <button type="submit">Speichern</button>
     </form>
 

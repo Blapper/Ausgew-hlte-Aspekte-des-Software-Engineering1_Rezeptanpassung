@@ -1,5 +1,6 @@
 package assignment.dhbw.olaf.rezeptanpassung.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,8 @@ import org.bson.types.ObjectId;
 import assignment.dhbw.olaf.rezeptanpassung.db.BerichtDocument;
 import assignment.dhbw.olaf.rezeptanpassung.db.BerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
+import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
+import assignment.dhbw.olaf.rezeptanpassung.db.ZutatUeberschuss;
 
 @Controller
 public class Bericht_ThymeleafController {
@@ -91,7 +94,7 @@ public class Bericht_ThymeleafController {
                                       @RequestParam("anzahlWoelflinge") int anzahlWoelflinge,
                                       @RequestParam("anzahlPfadfinder") int anzahlPfadfinder,
                                       @RequestParam("anzahlRangerRover") int anzahlRangerRover,
-                                      @RequestParam("prozentualerUeberschuss") double prozentualerUeberschuss,
+                                      @RequestParam(value = "ueberschuss", required = false) List<Double> ueberschuss,
                                       Model model ) {
 
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
@@ -142,12 +145,37 @@ public class Bericht_ThymeleafController {
 
         final GerichtDocument gericht = gerichtOptional.get();
 
+        final List<Zutat> zutaten = gericht.getZutatenlisteProPerson();
+
+        final List<Double> ueberschuesse = ueberschuss == null ? List.of() : ueberschuss;
+
+        final int anzahlZutaten = zutaten == null ? 0 : zutaten.size();
+
+        if ( ueberschuesse.size() != anzahlZutaten ) {
+
+            final String meldung = "Es muss für jede Zutat genau ein prozentualer Überschuss angegeben werden.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+
+        final List<ZutatUeberschuss> zutatenUeberschuesse = new ArrayList<>();
+
+        for ( int i = 0; i < anzahlZutaten; i++ ) {
+
+            zutatenUeberschuesse.add( new ZutatUeberschuss( zutaten.get( i ).name(), ueberschuesse.get( i ) ) );
+        }
+
         final Optional<BerichtDocument> hoechsterBericht = _berichtRepo.findTopByGerichtIdOrderByNummerDesc( gericht.getId() );
 
         final int naechsteBerichtNummer = hoechsterBericht.map( BerichtDocument::getNummer ).orElse( 0 ) + 1;
 
         final BerichtDocument bericht = new BerichtDocument( gericht.getId(), naechsteBerichtNummer, anzahlWoelflinge,
-                                                               anzahlPfadfinder, anzahlRangerRover, prozentualerUeberschuss );
+                                                               anzahlPfadfinder, anzahlRangerRover, zutatenUeberschuesse );
 
         _berichtRepo.save( bericht );
 
