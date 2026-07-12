@@ -11,7 +11,7 @@ public interface GerichtRepo extends MongoRepository<GerichtDocument, ObjectId> 
 
     Optional<GerichtDocument> findByNummer( int nummer );
 
-    Optional<GerichtDocument> findTopByOrderByNummerDesc();
+    Optional<GerichtDocument> findTopByOrderByNummerDesc(); // interface von MongoDB
 
     List<GerichtDocument> findAllByOrderByNameAsc();
 }

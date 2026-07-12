@@ -22,6 +22,7 @@ import assignment.dhbw.olaf.rezeptanpassung.db.BerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
 import assignment.dhbw.olaf.rezeptanpassung.db.ZutatUeberschuss;
+import assignment.dhbw.olaf.rezeptanpassung.logik.UebertragenService;
 
 @Controller
 public class Bericht_ThymeleafController {
@@ -35,7 +36,10 @@ public class Bericht_ThymeleafController {
 
     @Autowired
     private GerichtRepo _gerichtRepo;
-    
+
+    @Autowired
+    private UebertragenService _uebertragenService;
+
     //Anlegen eines neuen Berichtes
 
     @GetMapping( "/berichte/{nummer}" )
@@ -259,6 +263,47 @@ public class Bericht_ThymeleafController {
         _berichtRepo.delete( berichtOptional.get() );
 
         return "redirect:/berichte/" + nummer;
+    }
+
+    //Übertragen eines Berichtes auf ein neues Gericht
+    @PostMapping( "/berichte/{nummer}/{berichtNummer}/uebertragen" )
+    public String berichtUebertragen( @PathVariable("nummer") int nummer,
+                                       @PathVariable("berichtNummer") int berichtNummer,
+                                       Model model ) {
+
+        final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
+
+        if ( gerichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Gericht mit Nummer \"%s\" gefunden.", nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final GerichtDocument gericht = gerichtOptional.get();
+
+        final Optional<BerichtDocument> berichtOptional = _berichtRepo.findByGerichtIdAndNummer( gericht.getId(), berichtNummer );
+
+        if ( berichtOptional.isEmpty() ) {
+
+            final String meldung = format( "Kein Bericht mit Nummer \"%d\" für Gericht \"%s\" gefunden.", berichtNummer, nummer );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final BerichtDocument bericht = berichtOptional.get();
+
+        final GerichtDocument neuesGericht = _uebertragenService.uebertrageBericht( gericht, bericht );
+
+        return "redirect:/gerichte/" + neuesGericht.getNummer();
     }
 
 }
