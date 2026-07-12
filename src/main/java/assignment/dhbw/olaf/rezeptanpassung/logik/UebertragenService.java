@@ -77,7 +77,7 @@ public class UebertragenService {
 
         final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
 
-        final int neueNummer = hoechstesGericht.getNummer() + 1;
+        final int neueNummer = hoechstesGericht.get().getNummer() + 1;
 
         final GerichtDocument neuesGericht = new GerichtDocument(
                 neueNummer,
