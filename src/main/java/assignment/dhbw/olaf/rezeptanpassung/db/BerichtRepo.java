@@ -14,4 +14,6 @@ public interface BerichtRepo extends MongoRepository<BerichtDocument, ObjectId> 
     Optional<BerichtDocument> findTopByGerichtIdOrderByNummerDesc( ObjectId gerichtId );
 
     Optional<BerichtDocument> findByGerichtIdAndNummer( ObjectId gerichtId, int nummer );
+
+    void deleteByGerichtId( ObjectId gerichtId );
 }

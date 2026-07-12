@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.bson.types.ObjectId;
 
+import assignment.dhbw.olaf.rezeptanpassung.db.BerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtDocument;
 import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
@@ -33,6 +35,9 @@ public class Gericht_ThymeleafController {
     /** Repo-Bean für Zugriff auf MongoDB-Collection mit Gerichten. */
     @Autowired
     private GerichtRepo _gerichtRepo;
+
+    @Autowired
+    private BerichtRepo _berichtRepo;
 
     /**
      * Zeigt die Liste aller Gerichte an.
@@ -137,7 +142,7 @@ public class Gericht_ThymeleafController {
         return "gericht-loeschen";
     }
 
-
+    /**Löschen eines Gerichtes */
     @PostMapping( "/gerichte/{nummer}/loeschen" )
     public String gerichtLoeschen( @PathVariable("nummer") int nummer, Model model ) {
 
@@ -153,6 +158,10 @@ public class Gericht_ThymeleafController {
 
             return "fehler";
         }
+
+         ObjectId gerichtId = gerichtOptional.get().getId();
+
+        _berichtRepo.deleteByGerichtId(  gerichtId );
 
         _gerichtRepo.delete( gerichtOptional.get() );
 
