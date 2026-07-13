@@ -92,7 +92,9 @@ public class UebertragenService {
 
         final double veraenderung = 1 + ( prozentUeberschuss / 100 * ( -1 ) );
 
-        return menge * veraenderung;
+        final double neueMenge = menge * veraenderung;
+
+        return Math.round( neueMenge * 1000.0 ) / 1000.0;
     }
 
 }

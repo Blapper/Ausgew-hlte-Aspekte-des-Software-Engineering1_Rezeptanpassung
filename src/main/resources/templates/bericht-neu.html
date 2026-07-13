@@ -8,15 +8,15 @@
     <h1>Neuen Bericht anlegen für <span th:text="${gericht.name}">Gericht</span></h1>
 
     <form th:action="@{/berichte/neu/{nummer}(nummer=${gericht.nummer})}" method="post">
-        <label>Wölflinge / Grundschüler: <input type="number" name="anzahlWoelflinge" required="required"></label><br>
-        <label>Pfadfinder / 12 bis 16 Jahre: <input type="number" name="anzahlPfadfinder" required="required"></label><br>
-        <label>Ranger/Rover / älter als 16: <input type="number" name="anzahlRangerRover" required="required"></label><br>
+        <label>Wölflinge / Grundschüler: <input type="number" name="anzahlWoelflinge" ></label><br>
+        <label>Pfadfinder / 12 bis 16 Jahre: <input type="number" name="anzahlPfadfinder" ></label><br>
+        <label>Ranger/Rover / älter als 16: <input type="number" name="anzahlRangerRover" ></label><br>
 
         <h2>Prozentualer Überschuss pro Zutat</h2>
 
         <div th:each="zutat : ${gericht.zutatenlisteProPerson}">
             <label th:text="${zutat.name} + ' – Prozentualer Überschuss (%):'">Zutat</label>
-            <input type="number" step="any" name="ueberschuss" required="required">
+            <input type="number" step="any" name="ueberschuss">
         </div>
 
         <button type="submit">Speichern</button>

@@ -23,6 +23,7 @@ import assignment.dhbw.olaf.rezeptanpassung.db.GerichtRepo;
 import assignment.dhbw.olaf.rezeptanpassung.db.Zutat;
 import assignment.dhbw.olaf.rezeptanpassung.db.ZutatUeberschuss;
 import assignment.dhbw.olaf.rezeptanpassung.logik.UebertragenService;
+import assignment.dhbw.olaf.rezeptanpassung.web.EingabeValidierung;
 
 @Controller
 public class Bericht_ThymeleafController {
@@ -95,10 +96,10 @@ public class Bericht_ThymeleafController {
     //Speichern eines neuen Berichtes
     @PostMapping( "/berichte/neu/{nummer}" )
     public String berichtNeuSpeichern( @PathVariable("nummer") int nummer,
-                                      @RequestParam("anzahlWoelflinge") int anzahlWoelflinge,
-                                      @RequestParam("anzahlPfadfinder") int anzahlPfadfinder,
-                                      @RequestParam("anzahlRangerRover") int anzahlRangerRover,
-                                      @RequestParam(value = "ueberschuss", required = false) List<Double> ueberschuss,
+                                      @RequestParam("anzahlWoelflinge") String anzahlWoelflingeText,
+                                      @RequestParam("anzahlPfadfinder") String anzahlPfadfinderText,
+                                      @RequestParam("anzahlRangerRover") String anzahlRangerRoverText,
+                                      @RequestParam(value = "ueberschuss", required = false) List<String> ueberschussTexte,
                                       Model model ) {
 
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
@@ -113,6 +114,76 @@ public class Bericht_ThymeleafController {
 
             return "fehler";
         }
+
+        if ( anzahlWoelflingeText.isBlank() ) {
+
+            final String meldung = "Anzahl der Woelflinge darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !EingabeValidierung.istZahl( anzahlWoelflingeText ) ) {
+
+            final String meldung = "Anzahl der Woelflinge muss eine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( anzahlPfadfinderText.isBlank() ) {
+
+            final String meldung = "Anzahl der Pfadfinder darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !EingabeValidierung.istZahl( anzahlPfadfinderText ) ) {
+
+            final String meldung = "Anzahl der Pfadfinder muss eine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( anzahlRangerRoverText.isBlank() ) {
+
+            final String meldung = "Anzahl der RangerRover darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !EingabeValidierung.istZahl( anzahlRangerRoverText ) ) {
+
+            final String meldung = "Anzahl der RangerRover muss eine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final int anzahlWoelflinge = Integer.parseInt( anzahlWoelflingeText.trim() );
+        final int anzahlPfadfinder = Integer.parseInt( anzahlPfadfinderText.trim() );
+        final int anzahlRangerRover = Integer.parseInt( anzahlRangerRoverText.trim() );
 
         if ( anzahlWoelflinge <= 0 ) {
 
@@ -151,11 +222,11 @@ public class Bericht_ThymeleafController {
 
         final List<Zutat> zutaten = gericht.getZutatenlisteProPerson();
 
-        final List<Double> ueberschuesse = ueberschuss == null ? List.of() : ueberschuss;
+        final List<String> ueberschuesseTexte = ueberschussTexte == null ? List.of() : ueberschussTexte;
 
         final int anzahlZutaten = zutaten == null ? 0 : zutaten.size();
 
-        if ( ueberschuesse.size() != anzahlZutaten ) {
+        if ( ueberschuesseTexte.size() != anzahlZutaten ) {
 
             final String meldung = "Es muss für jede Zutat genau ein prozentualer Überschuss angegeben werden.";
 
@@ -166,6 +237,47 @@ public class Bericht_ThymeleafController {
             return "fehler";
         }
 
+        /** Erste Schleife: nur Validierung der Überschuss-Texte. */
+        for ( int i = 0; i < anzahlZutaten; i++ ) {
+
+            final String ueberschussText = ueberschuesseTexte.get( i );
+            final String zutatName = zutaten.get( i ).name();
+
+            if ( ueberschussText == null || ueberschussText.isBlank() ) {
+
+                final String meldung = format( 
+                    "Überschuss für Zutat \"%s\" darf nicht leer sein."+
+                     " 0 Eintragen wenn keine Änderung vorgenommen werden soll", zutatName );
+
+                LOG.warn( meldung );
+
+                model.addAttribute( "fehlermeldung", meldung );
+
+                return "fehler";
+            }
+
+            if ( !EingabeValidierung.istZahl( ueberschussText ) ) {
+
+                final String meldung = format( "Überschuss für Zutat \"%s\" muss eine Zahl sein.", zutatName );
+
+                LOG.warn( meldung );
+
+                model.addAttribute( "fehlermeldung", meldung );
+
+                return "fehler";
+            }
+        }
+
+        /** Nach erfolgreicher Validierung parsen. */
+        final List<Double> ueberschuesse = new ArrayList<>();
+        
+        for ( int i = 0; i < anzahlZutaten; i++ ) {
+
+        final String ueberschussText = ueberschuesseTexte.get( i );
+
+        ueberschuesse.add( Double.parseDouble( ueberschussText.trim().replace( ",", "." ) ) );
+        
+        }
 
         final List<ZutatUeberschuss> zutatenUeberschuesse = new ArrayList<>();
 

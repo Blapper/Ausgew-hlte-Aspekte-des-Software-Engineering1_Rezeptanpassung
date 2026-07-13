@@ -115,6 +115,18 @@ public class Gericht_ThymeleafController {
             return "fehler";
         }
 
+        if ( EingabeValidierung.istZahl( name ) ) {
+
+            final String meldung = "Name des Gericht darf keine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+
         final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
 
         final int naechsteNummer = hoechstesGericht.map( GerichtDocument::getNummer ).orElse( 0 ) + 1;
@@ -203,7 +215,7 @@ public class Gericht_ThymeleafController {
     @PostMapping( "/gerichte/{nummer}/zutaten/neu" )
     public String zutatNeuSpeichern( @PathVariable("nummer") int nummer,
                                       @RequestParam("name") String name,
-                                      @RequestParam("menge") double menge,
+                                      @RequestParam("menge") String mengeText,
                                       @RequestParam("einheit") String einheit,
                                       Model model ) {
 
@@ -231,6 +243,46 @@ public class Gericht_ThymeleafController {
             return "fehler";
         }
 
+        if ( EingabeValidierung.istZahl( name ) ) {
+
+            final String meldung = "Name der Zutat darf keine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( mengeText.isBlank() ) {
+
+            final String meldung = "Menge der Zutat darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        final double menge;
+
+        /**Menge wieder zu Zahl */
+        try {
+
+            menge = Double.parseDouble( mengeText.trim().replace( ",", "." ) );
+
+        } catch ( NumberFormatException e ) {
+
+            final String meldung = format( "Menge \"%s\" ist keine gültige Zahl.", mengeText );
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
         if ( menge <= 0 ) {
 
             final String meldung = "Menge muss größer als 0 sein.";
@@ -245,6 +297,17 @@ public class Gericht_ThymeleafController {
         if ( einheit.isBlank() ) {
 
             final String meldung = "Einheit darf nicht leer sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( EingabeValidierung.istZahl( einheit ) ) {
+
+            final String meldung = "Einheit darf keine Zahl sein.";
 
             LOG.warn( meldung );
 
@@ -403,6 +466,28 @@ public class Gericht_ThymeleafController {
         if ( nameLeer && mengeLeer && einheitLeer ) {
 
             final String meldung = "Mindestens ein Feld muss ausgefüllt sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !nameLeer && EingabeValidierung.istZahl( name ) ) {
+
+            final String meldung = "Name der Zutat darf keine Zahl sein.";
+
+            LOG.warn( meldung );
+
+            model.addAttribute( "fehlermeldung", meldung );
+
+            return "fehler";
+        }
+
+        if ( !einheitLeer && EingabeValidierung.istZahl( einheit ) ) {
+
+            final String meldung = "Name der Einheit darf keine Zahl sein.";
 
             LOG.warn( meldung );
 
