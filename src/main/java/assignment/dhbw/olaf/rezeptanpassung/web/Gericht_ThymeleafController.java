@@ -126,7 +126,7 @@ public class Gericht_ThymeleafController {
             return "fehler";
         }
 
-
+        /** Sucht Gerichtenummer und ++ für die Bildung der Nummer */
         final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
 
         final int naechsteNummer = hoechstesGericht.map( GerichtDocument::getNummer ).orElse( 0 ) + 1;
@@ -137,7 +137,7 @@ public class Gericht_ThymeleafController {
 
         model.addAttribute( "gericht", gericht );
         
-        return "gericht-detail"; // oder eigenes Erfolgs-Template
+        return "gericht-detail"; 
     }
 
     /** Löschen eines Gerichtes */
@@ -179,6 +179,7 @@ public class Gericht_ThymeleafController {
             return "fehler";
         }
 
+         /**ObjektId ist interne MongoDB-Primärschlüssel */ 
          ObjectId gerichtId = gerichtOptional.get().getId();
 
         _berichtRepo.deleteByGerichtId(  gerichtId );
@@ -267,7 +268,7 @@ public class Gericht_ThymeleafController {
 
         final double menge;
 
-        /**Menge wieder zu Zahl */
+        /**Menge wieder als Zahl */
         try {
 
             menge = Double.parseDouble( mengeText.trim().replace( ",", "." ) );

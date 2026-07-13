@@ -54,11 +54,15 @@ public class UebertragenService {
 
         final List<Zutat> neueZutaten = new ArrayList<>();
 
+        // Äußere Schleife: geht jede Zutat des alten Gerichts einzeln durch
         for ( int i = 0; i < altesGericht.getZutatenlisteProPerson().size(); i++ ) {
 
             final Zutat alteZutat = altesGericht.getZutatenlisteProPerson().get( i );
 
             double prozentUeberschuss = 0.0;
+
+            /** Innere Schleife: sucht in der Überschuss-Liste den Eintrag, 
+             erkennt Zutaten über Zutat-Name  */ 
 
             for ( int j = 0; j < ueberschuesse.size(); j++ ) {
 
@@ -67,7 +71,7 @@ public class UebertragenService {
                     prozentUeberschuss = ueberschuesse.get( j ).prozentualerUeberschuss();
                 }
             }
-
+                /** Berechne neu Menge, rechnet mit 0 falls zuvor kein Treffer  */ 
             final double neueMenge = bestimmeVeraenderung( alteZutat.menge(), prozentUeberschuss );
 
             final Zutat neueZutat = new Zutat( alteZutat.name(), neueMenge, alteZutat.einheit() );
@@ -79,6 +83,10 @@ public class UebertragenService {
 
         final int neueNummer = hoechstesGericht.get().getNummer() + 1;
 
+          /**
+         * Version zeigt an was die vorherige Version war
+        * mehrere Versionen wie V3 möglich.
+         */        
         final GerichtDocument neuesGericht = new GerichtDocument(
                 neueNummer,
                 altesGericht.getName(),
@@ -88,12 +96,19 @@ public class UebertragenService {
         return _gerichtRepo.save( neuesGericht );
     }
 
+    /**
+         * Hilfsmethode für die Übernahme der Veränderung
+        * rechnet *(-1) da 20% Überschuss = zuviel
+         */
      private double bestimmeVeraenderung( double menge, double prozentUeberschuss ) {
 
         final double veraenderung = 1 + ( prozentUeberschuss / 100 * ( -1 ) );
 
         final double neueMenge = menge * veraenderung;
 
+        /**
+        * Runden auf 3 Komma-Stellen
+        */
         return Math.round( neueMenge * 1000.0 ) / 1000.0;
     }
 

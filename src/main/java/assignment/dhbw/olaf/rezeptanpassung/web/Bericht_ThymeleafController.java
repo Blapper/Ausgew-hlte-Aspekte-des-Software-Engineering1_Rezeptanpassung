@@ -220,6 +220,8 @@ public class Bericht_ThymeleafController {
 
         final GerichtDocument gericht = gerichtOptional.get();
 
+
+        //Speichere die Zutaten in einer Liste
         final List<Zutat> zutaten = gericht.getZutatenlisteProPerson();
 
         final List<String> ueberschuesseTexte = ueberschussTexte == null ? List.of() : ueberschussTexte;
@@ -268,7 +270,9 @@ public class Bericht_ThymeleafController {
             }
         }
 
-        /** Nach erfolgreicher Validierung parsen. */
+        /** Nach erfolgreicher Validierung parsen in Double
+         * Diese Liste ueberschuesse kennt nur die Überschüsse
+         */
         final List<Double> ueberschuesse = new ArrayList<>();
         
         for ( int i = 0; i < anzahlZutaten; i++ ) {
@@ -279,6 +283,7 @@ public class Bericht_ThymeleafController {
         
         }
 
+        /** Kombination der Zutaten und Überschusswerte */
         final List<ZutatUeberschuss> zutatenUeberschuesse = new ArrayList<>();
 
         for ( int i = 0; i < anzahlZutaten; i++ ) {
@@ -286,6 +291,7 @@ public class Bericht_ThymeleafController {
             zutatenUeberschuesse.add( new ZutatUeberschuss( zutaten.get( i ).name(), ueberschuesse.get( i ) ) );
         }
 
+        /** Zuordnung der höchsten Berichtnummer, ++ für vergabe eines Wertes */
         final Optional<BerichtDocument> hoechsterBericht = _berichtRepo.findTopByGerichtIdOrderByNummerDesc( gericht.getId() );
 
         final int naechsteBerichtNummer = hoechsterBericht.map( BerichtDocument::getNummer ).orElse( 0 ) + 1;
@@ -304,6 +310,7 @@ public class Bericht_ThymeleafController {
                                                @PathVariable("berichtNummer") int berichtNummer,
                                                Model model ) {
 
+        //Gericht anhand der Nummer aus der URL suchen
         final Optional<GerichtDocument> gerichtOptional = _gerichtRepo.findByNummer( nummer );
 
         if ( gerichtOptional.isEmpty() ) {
@@ -335,6 +342,7 @@ public class Bericht_ThymeleafController {
         model.addAttribute( "gericht", gericht );
         model.addAttribute( "bericht", berichtOptional.get() );
 
+        // Löcshen wenn Bericht exestiert
         return "bericht-loeschen";
     }
 
@@ -413,6 +421,7 @@ public class Bericht_ThymeleafController {
 
         final BerichtDocument bericht = berichtOptional.get();
 
+        //Übertragen eines Berichtes auf ein neues Gericht
         final GerichtDocument neuesGericht;
 
         try {
@@ -435,41 +444,3 @@ public class Bericht_ThymeleafController {
     }
 
 }
-
-/** Anlegen eines neuen Gerichtes 
-    @GetMapping( "/gerichte/neu" )
-    public String gerichtNeuFormular( Model model ) {
-
-    return "gericht-neu";
-    } 
-    
-    Speichern eines neuen Gerichtes 
-    @PostMapping( "/gerichte/neu" )
-    public String gerichtNeuSpeichern( Model model,
-                                    @RequestParam("name") String name ) {
-
-        if ( name.isBlank() ) {
-
-            final String meldung = "Name darf nicht leer sein.";
-
-            LOG.warn( meldung );
-
-            model.addAttribute( "fehlermeldung", meldung );
-
-            return "fehler";
-        }
-
-        final Optional<GerichtDocument> hoechstesGericht = _gerichtRepo.findTopByOrderByNummerDesc();
-
-        final int naechsteNummer = hoechstesGericht.map( GerichtDocument::getNummer ).orElse( 0 ) + 1;
-
-        final GerichtDocument gericht = new GerichtDocument( naechsteNummer, name, 1, null );
-
-        _gerichtRepo.save( gericht );
-
-        model.addAttribute( "gericht", gericht );
-        
-        return "gericht-detail"; // oder eigenes Erfolgs-Template
-    }
-    
-    */
